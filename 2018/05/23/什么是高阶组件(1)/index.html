@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Rico 小栈">
 <meta property="og:description" content="什么是高阶组件 高阶组件,名字来源于高阶函数，一个函数可以接收另一个函数作为参数，并且有可能在执行后返回一个函数，这种函数就称之为高阶函数。你可能使用过高阶函数但是并没有真正意识到,例如Array.forEach、Array.map、setTimeout等这些都是高阶函数，我们都知道这些函数全都是接受一个函数作为参数，当新的函数返回时，他已经发生了变化。  例如以下的是高阶函数1234567891">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-23T13:06:37.245Z">
+<meta property="og:updated_time" content="2018-05-24T06:39:04.960Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="什么是高阶组件(1)">
 <meta name="twitter:description" content="什么是高阶组件 高阶组件,名字来源于高阶函数，一个函数可以接收另一个函数作为参数，并且有可能在执行后返回一个函数，这种函数就称之为高阶函数。你可能使用过高阶函数但是并没有真正意识到,例如Array.forEach、Array.map、setTimeout等这些都是高阶函数，我们都知道这些函数全都是接受一个函数作为参数，当新的函数返回时，他已经发生了变化。  例如以下的是高阶函数1234567891">
@@ -346,19 +346,23 @@
 <h5 id="如何使用呢"><a href="#如何使用呢" class="headerlink" title="如何使用呢"></a>如何使用呢</h5><blockquote>
 <p>假设我们上面的代码放在了<code>src/wrapWithLoadData.js</code>文件中，我们的使用方式是👇</p>
 </blockquote>
-<blockquote>
-<p>解释: 每当其它组件需要在组件挂载的时候需要从<code>LocalStorage</code>获取<code>username</code>的信息时，我们使用这个高阶组件来获取，这样可避免逻辑重复写多次的情况 比如下面👇</p>
-</blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import wrapWithLoadData from &apos;./warpWithLoadData&apos;;</span><br><span class="line">import React,&#123; Component &#125; from &apos;react&apos;;</span><br><span class="line"></span><br><span class="line">class InputWithUserName extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return &lt;input value=&#123;this.props.data&#125; /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">InputWithUserName = wrapWithLoadData(InputWithUserName,&apos;rico&apos;);</span><br><span class="line">export default InputWithUserName;</span><br><span class="line"></span><br><span class="line">//  这里是两个组件，不能写在通一个文件中，因为一个文件只能有一个 export default</span><br><span class="line"></span><br><span class="line">import React,&#123;Component&#125; from &apos;react&apos;;</span><br><span class="line">import wrapWithLoadData from &apos;./warpWithLoadData&apos;;</span><br><span class="line"></span><br><span class="line">class TextareaWithContent extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return &lt;textare value=&#123;this.props.data&#125; /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">TextareaWithContent = wrapWithLoadData(TextareaWithContent,&apos;message&apos;)</span><br><span class="line">export default TextareaWithContent;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>解释: 每当其它组件需要在组件挂载的时候需要从<code>LocalStorage</code>获取<code>username</code>的信息时，我们使用这个高阶组件来获取，这样可避免逻辑重复写多次的情况</p>
+</blockquote>
 <blockquote>
 <p>比如 UserForm的Form表单中，需要从LocalStorage里面获取一个username跟一个content这时候我们使用高阶组件帮我们处理从LocalStorage这个逻辑，我们之前已经写了一个InputWithUserName的一个高阶组件了，现在，我们再写一个从LocalStorage里面获取content的高阶组件</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//最后的引用将会变成这样</span><br><span class="line">import InputWithUserName from &apos;xxx/InputWithUserName&apos;;</span><br><span class="line">import TextareaWithContent from &apos;xxx/TextareaWithContent&apos;;</span><br><span class="line"></span><br><span class="line">export default class UserForm extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return(</span><br><span class="line">        &lt;div&gt;</span><br><span class="line">          用户名:&lt;InputWithUserName /&gt;</span><br><span class="line">          用户留言: &lt;TextareaWithContent /&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>这样写起来就很轻松，我们不需要去关心或者我们不需要重复写从LocalStorage里面去取数据的逻辑，这些逻辑统统交给高阶组件去完成,而且复用高。</p>
+<p>这样写起来就很轻松，我们不需要去关心或者我们不需要重复写从 <em>LocalStorage</em> 里面去取数据的逻辑，这些逻辑统统交给高阶组件去完成,而且复用高。</p>
 </blockquote>
-<h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><p>`<br>  高阶组件其实就是为了代码的复用性，与灵活度，组件间可能有相同的逻辑，把这些逻辑给抽离出来，放到高阶组件中去复用，高阶组件中的包装组件与被包装组件间通过 <em>props</em> 传递数据，有一个点，如果能用props处理的数据尽量通过props，尽量少使用state,state散布满地不是一件好事。</p>
-<p>`</p>
+<h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><blockquote>
+<p>高阶组件其实就是为了代码的复用性，与灵活度，组件间可能有相同的逻辑，把这些逻辑给抽离出来，放到高阶组件中去复用，高阶组件中的包装组件与被包装组件间通过 <em>props</em> 传递数据，有一个点，如果能用props处理的数据尽量通过 <em>props</em>，尽量少使用 <em>state</em> , <em>state</em> 散布满地不是一件好事。</p>
+</blockquote>
+<blockquote>
+<p>目前我接触过的高阶组件是   rc-form 的 createForm() 与 redux的connect()</p>
+</blockquote>
 
       
     </div>
@@ -400,6 +404,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/12/React之Dva/" rel="prev" title="React之Dva">
+                React之Dva <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -486,7 +494,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -499,7 +507,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -249,6 +249,164 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://blog.localhost-8080.me/2018/06/12/React之Dva/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rico Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rico 小栈">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/12/React之Dva/" itemprop="url">React之Dva</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-12T20:14:09+08:00">
+                2018-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/12/React之Dva/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/06/12/React之Dva/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Dva图解"><a href="#Dva图解" class="headerlink" title="Dva图解"></a>Dva图解</h3><pre><code>以最常见的Web开发示例之一的:TodoList 来做演示
+TodoList = Todo list + Add todo button
+</code></pre><h3 id="图解一-React表示法"><a href="#图解一-React表示法" class="headerlink" title="图解一:React表示法"></a>图解一:React表示法</h3><p>  <img src="https://cdn.yuque.com/yuque/0/2018/png/103904/1528436560812-2586a0b5-7a6a-4a07-895c-f822fa85d5de.png" alt=""><br>  按照 React 官方指导意见, 如果多个 <code>Component</code> 之间要发生交互, 那么状态(即: 数据)就维护在这些 <code>Component</code> 的最小公约父节点上, 也即是<code>&lt;App/&gt;</code><br>  <code>&lt;TodoList/&gt;</code> <code>&lt;Todo/&gt;</code> 以及<code>&lt;AddTodoBtn/&gt;</code> 本身不维持任何 <code>state</code>, 完全由父节点<app> 传入 <code>props</code> 以决定其展现, 是一个纯函数的存在形式, 即: <code>Pure Component</code></app></p>
+<h3 id="图解二-Redux表示法"><a href="#图解二-Redux表示法" class="headerlink" title="图解二:Redux表示法"></a>图解二:Redux表示法</h3><p>  React 在其中的角色就是MVC中的V角色，只负责渲染，不处理页面逻辑，页面逻辑可以从中单独抽取出来，变成<code>store</code></p>
+<p>  <img src="https://cdn.yuque.com/yuque/0/2018/png/103904/1528436134375-4c15f63d-72f1-4c73-94a6-55b220d2547c.png" alt=""></p>
+<p>  与图一相比, 几个明显的改进点:</p>
+<ol>
+<li>多了一个<code>Provider</code>组件，该组件提供一个<code>Store</code>来处理页面关的数据，<code>Redux</code>的最大特点就是提供一个单向数据流的数据模式。</li>
+<li>状态及页面逻辑从 <code>&lt;App/&gt;</code>里面抽取出来, 成为独立的 <code>store</code>, 页面逻辑就是 <code>reducer</code></li>
+<li><code>&lt;TodoList/&gt;</code> 及<code>&lt;AddTodoBtn/&gt;</code>都是 <code>Pure Component</code>, 通过 <code>connect</code> 方法可以很方便地给它俩加一层 <code>wrapper</code> 从而建立起与 <code>store</code> 的联系: 可以通过 <code>dispatch</code> 向 <code>store</code> 注入 <code>action</code>, 促使 <code>store</code> 的状态进行变化, 同时又订阅了 <code>store</code> 的状态变化, 一旦状态有变, 被 <code>connect</code> 的组件也随之刷新</li>
+<li>使用 <code>dispatch</code> 往 <code>store</code> 发送 <code>action</code> 的这个过程是可以被拦截的, 自然而然地就可以在这里增加各种 <code>Middleware</code>, 实现各种自定义功能, <code>eg: logging</code></li>
+</ol>
+<p>这样一来, 各个部分各司其职, 耦合度更低, 复用度更高, 扩展性更好</p>
+<h3 id="图解三-加入-Saga"><a href="#图解三-加入-Saga" class="headerlink" title="图解三: 加入 Saga"></a>图解三: 加入 Saga</h3><p><img src="https://cdn.yuque.com/yuque/0/2018/png/103904/1528436167824-7fa834ea-aa6c-4f9f-bab5-b8c5312bcf7e.png" alt=""></p>
+<p>上面说了, 可以使用 <code>Middleware</code> 拦截 <code>action</code>, 这样一来异步的网络操作也就很方便了, 做成一个 <code>Middleware</code> 就行了, 这里使用 <code>redux-saga</code> 这个类库, 举个栗子:</p>
+<ol>
+<li>点击创建 <code>AddTodoBtn</code> 的按钮, 发起一个 <code>type == addTodo</code> 的 <code>action</code></li>
+<li><code>saga</code> 拦截这个 <code>action</code>, 发起 <code>http</code> 请求, 如果请求成功, 则继续向 <code>reducer</code> 发一个 <code>type == addTodoSucc</code> 的 <code>action</code>, 提示创建成功, 反之则发送 <code>type == addTodoFail</code> 的 <code>action</code> 即可</li>
+</ol>
+<h3 id="图解四-Dva-表示法"><a href="#图解四-Dva-表示法" class="headerlink" title="图解四: Dva 表示法"></a>图解四: Dva 表示法</h3><p><img src="https://cdn.yuque.com/yuque/0/2018/png/103904/1528436195004-cd3800f2-f13d-40ba-bb1f-4efba99cfe0d.png" alt=""></p>
+<p>有了前面的三步铺垫, <code>Dva</code> 的出现也就水到渠成了, 正如 <code>Dva</code> 官网所言, <code>Dva</code> 是基于 <code>React + Redux + Saga</code> 的最佳实践沉淀, 做了 3 件很重要的事情, 大大提升了编码体验:</p>
+<ol>
+<li>把 <code>store</code> 及 <code>saga</code> 统一为一个 <code>model</code> 的概念, 写在一个 <code>js</code> 文件里面</li>
+<li>增加了一个 <code>Subscriptions</code>, 用于收集其他来源的 <code>action</code>, <code>eg: 键盘操作</code></li>
+<li><code>model</code> 写法很简约, 类似于 <code>DSL</code> 或者 <code>RoR</code></li>
+</ol>
+<p><code>约定优于配置</code><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">app.model(&#123;</span><br><span class="line">  namespace: <span class="string">'count'</span>,</span><br><span class="line">  state: &#123;</span><br><span class="line">    record: <span class="number">0</span>,</span><br><span class="line">    current: <span class="number">0</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  reducers: &#123;</span><br><span class="line">    add(state) &#123;</span><br><span class="line">      <span class="keyword">const</span> newCurrent = state.current + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">return</span> &#123; ...state,</span><br><span class="line">        record: newCurrent &gt; state.record ? newCurrent : state.record,</span><br><span class="line">        current: newCurrent,</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    minus(state) &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123; ...state, <span class="attr">current</span>: state.current - <span class="number">1</span>&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  effects: &#123;</span><br><span class="line">    *add(action, &#123; call, put &#125;) &#123;</span><br><span class="line">      <span class="keyword">yield</span> call(delay, <span class="number">1000</span>);</span><br><span class="line">      <span class="keyword">yield</span> put(&#123; <span class="attr">type</span>: <span class="string">'minus'</span> &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  subscriptions: &#123;</span><br><span class="line">    keyboardWatcher(&#123; dispatch &#125;) &#123;</span><br><span class="line">      key(<span class="string">'⌘+up, ctrl+up'</span>, () =&gt; &#123; dispatch(&#123;<span class="attr">type</span>:<span class="string">'add'</span>&#125;) &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>一个最基本的 model是<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="comment">// 表示在全局 state 上的 key</span></span><br><span class="line">  namespace: <span class="string">''</span>,</span><br><span class="line">  <span class="comment">// 是初始值</span></span><br><span class="line">  state: [],</span><br><span class="line">  <span class="comment">// （也称为 reducing function）函数接受两个参数：之前已经累积运算的结果和当前要被累积的值，返回的是一个新的累积结果。该函数把一个集合归并成一个单值。</span></span><br><span class="line">  reducers: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// Effect 被称为副作用，在我们的应用中，最常见的就是异步操作。它来自于函数编程的概念，之所以叫副作用是因为它使得我们的函数变得不纯，同样的输入不一定获得同样的输出。</span></span><br><span class="line">  effects:&#123;</span><br><span class="line"></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// Subscriptions 是一种从 源 获取数据的方法，它来自于 elm。</span></span><br><span class="line">  subscriptions:&#123;</span><br><span class="line"></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://blog.localhost-8080.me/2018/05/23/什么是高阶组件(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -346,19 +504,23 @@
 <h5 id="如何使用呢"><a href="#如何使用呢" class="headerlink" title="如何使用呢"></a>如何使用呢</h5><blockquote>
 <p>假设我们上面的代码放在了<code>src/wrapWithLoadData.js</code>文件中，我们的使用方式是👇</p>
 </blockquote>
-<blockquote>
-<p>解释: 每当其它组件需要在组件挂载的时候需要从<code>LocalStorage</code>获取<code>username</code>的信息时，我们使用这个高阶组件来获取，这样可避免逻辑重复写多次的情况 比如下面👇</p>
-</blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import wrapWithLoadData from &apos;./warpWithLoadData&apos;;</span><br><span class="line">import React,&#123; Component &#125; from &apos;react&apos;;</span><br><span class="line"></span><br><span class="line">class InputWithUserName extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return &lt;input value=&#123;this.props.data&#125; /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">InputWithUserName = wrapWithLoadData(InputWithUserName,&apos;rico&apos;);</span><br><span class="line">export default InputWithUserName;</span><br><span class="line"></span><br><span class="line">//  这里是两个组件，不能写在通一个文件中，因为一个文件只能有一个 export default</span><br><span class="line"></span><br><span class="line">import React,&#123;Component&#125; from &apos;react&apos;;</span><br><span class="line">import wrapWithLoadData from &apos;./warpWithLoadData&apos;;</span><br><span class="line"></span><br><span class="line">class TextareaWithContent extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return &lt;textare value=&#123;this.props.data&#125; /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">TextareaWithContent = wrapWithLoadData(TextareaWithContent,&apos;message&apos;)</span><br><span class="line">export default TextareaWithContent;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>解释: 每当其它组件需要在组件挂载的时候需要从<code>LocalStorage</code>获取<code>username</code>的信息时，我们使用这个高阶组件来获取，这样可避免逻辑重复写多次的情况</p>
+</blockquote>
 <blockquote>
 <p>比如 UserForm的Form表单中，需要从LocalStorage里面获取一个username跟一个content这时候我们使用高阶组件帮我们处理从LocalStorage这个逻辑，我们之前已经写了一个InputWithUserName的一个高阶组件了，现在，我们再写一个从LocalStorage里面获取content的高阶组件</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//最后的引用将会变成这样</span><br><span class="line">import InputWithUserName from &apos;xxx/InputWithUserName&apos;;</span><br><span class="line">import TextareaWithContent from &apos;xxx/TextareaWithContent&apos;;</span><br><span class="line"></span><br><span class="line">export default class UserForm extends Component&#123;</span><br><span class="line">  render()&#123;</span><br><span class="line">    return(</span><br><span class="line">        &lt;div&gt;</span><br><span class="line">          用户名:&lt;InputWithUserName /&gt;</span><br><span class="line">          用户留言: &lt;TextareaWithContent /&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line">      )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>这样写起来就很轻松，我们不需要去关心或者我们不需要重复写从LocalStorage里面去取数据的逻辑，这些逻辑统统交给高阶组件去完成,而且复用高。</p>
+<p>这样写起来就很轻松，我们不需要去关心或者我们不需要重复写从 <em>LocalStorage</em> 里面去取数据的逻辑，这些逻辑统统交给高阶组件去完成,而且复用高。</p>
 </blockquote>
-<h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><p>`<br>  高阶组件其实就是为了代码的复用性，与灵活度，组件间可能有相同的逻辑，把这些逻辑给抽离出来，放到高阶组件中去复用，高阶组件中的包装组件与被包装组件间通过 <em>props</em> 传递数据，有一个点，如果能用props处理的数据尽量通过props，尽量少使用state,state散布满地不是一件好事。</p>
-<p>`</p>
+<h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><blockquote>
+<p>高阶组件其实就是为了代码的复用性，与灵活度，组件间可能有相同的逻辑，把这些逻辑给抽离出来，放到高阶组件中去复用，高阶组件中的包装组件与被包装组件间通过 <em>props</em> 传递数据，有一个点，如果能用props处理的数据尽量通过 <em>props</em>，尽量少使用 <em>state</em> , <em>state</em> 散布满地不是一件好事。</p>
+</blockquote>
+<blockquote>
+<p>目前我接触过的高阶组件是   rc-form 的 createForm() 与 redux的connect()</p>
+</blockquote>
 
           
         
@@ -882,7 +1044,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -895,7 +1057,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
